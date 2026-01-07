@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .admin-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        .admin-header h2 {
+            margin: 0;
+            font-size: 2.2rem;
+            font-weight: 600;
+        }
+
+        .section-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .section-title {
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            position: relative;
+            padding-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 2px;
+        }
+
+        .btn-add {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            border: none;
+            padding: 10px 25px;
+            border-radius: 10px;
+            font-weight: 600;
+            color: white;
+            transition: all 0.3s;
+        }
+
+        .btn-add:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(67, 233, 123, 0.4);
+            color: white;
+        }
+
+        .table {
+            margin-top: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .table thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .table thead th {
+            border: none;
+            padding: 15px;
+            font-weight: 600;
+            vertical-align: middle;
+        }
+
+        .table tbody tr {
+            transition: all 0.3s;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .table tbody tr:hover {
+            background: #f8f9ff;
+            transform: scale(1.01);
+        }
+
+        .table tbody td {
+            padding: 15px;
+            vertical-align: middle;
+        }
+
+        .btn-edit {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            border: none;
+            padding: 6px 15px;
+            border-radius: 8px;
+            font-weight: 600;
+            color: white;
+            transition: all 0.3s;
+        }
+
+        .btn-edit:hover {
+            transform: scale(1.05);
+            box-shadow: 0 3px 10px rgba(79, 172, 254, 0.4);
+            color: white;
+        }
+
+        .btn-delete {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border: none;
+            padding: 6px 15px;
+            border-radius: 8px;
+            font-weight: 600;
+            color: white;
+            transition: all 0.3s;
+        }
+
+        .btn-delete:hover {
+            transform: scale(1.05);
+            box-shadow: 0 3px 10px rgba(245, 87, 108, 0.4);
+            color: white;
+        }
+
+        .btn-update {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            padding: 6px 15px;
+            border-radius: 8px;
+            font-weight: 600;
+            color: white;
+            transition: all 0.3s;
+        }
+
+        .btn-update:hover {
+            transform: scale(1.05);
+            box-shadow: 0 3px 10px rgba(102, 126, 234, 0.4);
+            color: white;
+        }
+
+        .form-select-sm {
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 8px;
+            transition: all 0.3s;
+        }
+
+        .form-select-sm:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+
+        .status-display {
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            display: inline-block;
+        }
+
+        .status-PENDING {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-CONFIRMED {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .status-CANCELLED {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-COMPLETED {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .stats-container {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            flex: 1;
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+<div class="container mt-4 mb-5">
+    <!-- Header -->
+    <div class="admin-header">
+        <h2>🏥 Admin Dashboard</h2>
+        <p style="margin: 5px 0 0 0; opacity: 0.9;">Manage doctors, appointments, and patients</p>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="stats-container">
+        <div class="stat-card">
+            <div class="stat-icon">👨‍⚕️</div>
+            <div class="stat-number" th:text="${#lists.size(doctors)}">0</div>
+            <div class="stat-label">Total Doctors</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">📋</div>
+            <div class="stat-number" th:text="${#lists.size(appointments)}">0</div>
+            <div class="stat-label">Total Appointments</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">👥</div>
+            <div class="stat-number" th:text="${#lists.size(patients)}">0</div>
+            <div class="stat-label">Total Patients</div>
+        </div>
+    </div>
+
+    <!-- Doctors -->
+    <div class="section-card">
+        <h3 class="section-title">👨‍⚕️ Doctors Management</h3>
+        <a th:href="@{/admin/doctor/add}" class="btn btn-add mb-3">➕ Add Doctor</a>
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Specialization</th>
+                    <th>Fee</th>
+                    <th>Availability</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="doctor : ${doctors}">
+                    <td><strong th:text="${doctor.name}"></strong></td>
+                    <td th:text="${doctor.specialization}"></td>
+                    <td><strong th:text="${doctor.fee}"></strong> Rs</td>
+                    <td th:text="${doctor.availability}"></td>
+                    <td>
+                        <div class="action-buttons">
+                            <a th:href="@{/admin/doctor/edit/{id}(id=${doctor.id})}" class="btn btn-edit btn-sm">✏️ Edit</a>
+                            <a th:href="@{/admin/doctor/delete/{id}(id=${doctor.id})}" class="btn btn-delete btn-sm">🗑️ Delete</a>
+                        </div>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(doctors)}">
+                    <td colspan="5" class="empty-state">No doctors available</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Appointments -->
+    <div class="section-card">
+        <h3 class="section-title">📋 Appointments Management</h3>
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th>Patient</th>
+                    <th>Doctor</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Status</th>
+                    <th>Change Status</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="appt : ${appointments}">
+                    <td><strong th:text="${appt.patient.name}"></strong></td>
+                    <td th:text="${appt.doctor.name}"></td>
+                    <td th:text="${appt.appointmentDate}"></td>
+                    <td th:text="${appt.appointmentTime}"></td>
+                    <td>
+                        <span class="status-display"
+                              th:classappend="${'status-' + appt.status}"
+                              th:text="${appt.status}"></span>
+                    </td>
+                    <td>
+                        <form th:action="@{/admin/appointment/status}" method="post" style="display: flex; gap: 8px; align-items: center;">
+                            <input type="hidden" name="id" th:value="${appt.id}">
+                            <select name="status" class="form-select form-select-sm">
+                                <option value="PENDING" th:selected="${appt.status=='PENDING'}">PENDING</option>
+                                <option value="CONFIRMED" th:selected="${appt.status=='CONFIRMED'}">CONFIRMED</option>
+                                <option value="CANCELLED" th:selected="${appt.status=='CANCELLED'}">CANCELLED</option>
+                                <option value="COMPLETED" th:selected="${appt.status=='COMPLETED'}">COMPLETED</option>
+                            </select>
+                            <button class="btn btn-update btn-sm">✓ Update</button>
+                        </form>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(appointments)}">
+                    <td colspan="6" class="empty-state">No appointments yet</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Patients -->
+    <div class="section-card">
+        <h3 class="section-title">👥 Patients List</h3>
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="patient : ${patients}">
+                    <td><strong th:text="${patient.name}"></strong></td>
+                    <td th:text="${patient.email}"></td>
+                    <td th:text="${patient.phone}"></td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(patients)}">
+                    <td colspan="3" class="empty-state">No patients registered</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>

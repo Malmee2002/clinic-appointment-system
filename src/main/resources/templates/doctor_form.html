@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Doctor Form</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            align-items: center;
+            padding: 40px 0;
+        }
+
+        .form-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            overflow: hidden;
+            max-width: 700px;
+            margin: auto;
+        }
+
+        .form-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .form-header h2 {
+            margin: 0;
+            font-size: 2rem;
+            font-weight: 600;
+        }
+
+        .form-icon {
+            font-size: 4rem;
+            margin-bottom: 15px;
+        }
+
+        .form-body {
+            padding: 50px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-control {
+            padding: 15px 20px;
+            border-radius: 12px;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s;
+            font-size: 1rem;
+        }
+
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.3rem rgba(102, 126, 234, 0.25);
+            transform: translateY(-2px);
+        }
+
+        .mb-3 {
+            margin-bottom: 25px !important;
+        }
+
+        .btn-save {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            border: none;
+            padding: 15px 40px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: white;
+            transition: all 0.3s;
+            margin-right: 15px;
+        }
+
+        .btn-save:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(67, 233, 123, 0.4);
+            color: white;
+        }
+
+        .btn-cancel {
+            background: #6c757d;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: white;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-cancel:hover {
+            background: #5a6268;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(108, 117, 125, 0.4);
+            color: white;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .icon-label {
+            font-size: 1.2rem;
+        }
+
+        .info-text {
+            color: #999;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        .form-helper {
+            background: #f8f9ff;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border-left: 4px solid #667eea;
+        }
+
+        .form-helper p {
+            margin: 0;
+            color: #555;
+            font-size: 0.95rem;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="form-container">
+        <!-- Header -->
+        <div class="form-header">
+            <div class="form-icon">👨‍⚕️</div>
+            <h2 th:text="${doctor.id == null ? 'Add New Doctor' : 'Edit Doctor'}"></h2>
+            <p style="margin: 10px 0 0 0; opacity: 0.9;"
+               th:text="${doctor.id == null ? 'Fill in the details to add a new doctor' : 'Update doctor information'}"></p>
+        </div>
+
+        <!-- Body -->
+        <div class="form-body">
+            <!-- Helper Info -->
+            <div class="form-helper">
+                <p>📝 <strong>Note:</strong> All fields are required. Please provide accurate information.</p>
+            </div>
+
+            <form th:action="${doctor.id == null ? '/admin/doctor/add' : '/admin/doctor/edit/' + doctor.id}"
+                  th:object="${doctor}"
+                  method="post">
+
+                <div class="mb-3">
+                    <label for="name" class="form-label">
+                        <span class="icon-label">👤</span>
+                        Doctor Name
+                    </label>
+                    <input type="text" class="form-control" id="name" th:field="*{name}"
+                           placeholder="Enter doctor's full name" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="specialization" class="form-label">
+                        <span class="icon-label">🩺</span>
+                        Specialization
+                    </label>
+                    <input type="text" class="form-control" id="specialization" th:field="*{specialization}"
+                           placeholder="e.g., Cardiologist, Dermatologist" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="fee" class="form-label">
+                        <span class="icon-label">💰</span>
+                        Consultation Fee (Rs)
+                    </label>
+                    <input type="number" step="0.01" class="form-control" id="fee" th:field="*{fee}"
+                           placeholder="Enter consultation fee" required>
+                    <div class="info-text">Fee payable at clinic reception</div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="availability" class="form-label">
+                        <span class="icon-label">📅</span>
+                        Availability
+                    </label>
+                    <input type="text" class="form-control" id="availability" th:field="*{availability}"
+                           placeholder="e.g., Mon-Fri 9AM-5PM" required>
+                    <div class="info-text">Specify days and time slots</div>
+                </div>
+
+                <div class="button-group">
+                    <button type="submit" class="btn btn-save">
+                        ✓ Save Doctor
+                    </button>
+                    <a th:href="@{/admin/dashboard}" class="btn btn-cancel">
+                        ✕ Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>
